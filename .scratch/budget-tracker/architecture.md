@@ -1,6 +1,7 @@
 # Budget Tracker - Architecture
 
 ## Tech Stack
+
 - **Framework**: Next.js 16 (App Router) + TypeScript
 - **Styling**: Radix UI + Tailwind CSS 4
 - **State**: React Context + useReducer
@@ -13,14 +14,18 @@
 ## Patterns
 
 ### Repository Pattern
+
 ```
 TransactionRepository (interface)
   └── IndexedDBTransactionRepository (implementation)
 ```
+
 Future: `HttpTransactionRepository` for self-hosted sync.
 
 ### Context + Reducer Pattern
+
 Each domain has:
+
 - `_repository_` interface + implementation
 - `_context_` provider + hook
 - `_reducer_` with actions: add, update, delete, setAll
@@ -28,42 +33,46 @@ Each domain has:
 ## Data Models
 
 ### Transaction
+
 ```typescript
 interface Transaction {
   id: string;
-  amount: number;        // positive for income, negative for expense
+  amount: number; // positive for income, negative for expense
   categoryId: string;
-  date: Date;            // ISO string stored
+  date: Date; // ISO string stored
   note?: string;
-  venue?: string;        // bar/venue name
+  venue?: string; // bar/venue name
   createdAt: Date;
   updatedAt: Date;
 }
 ```
 
 ### Category
+
 ```typescript
 interface Category {
   id: string;
   name: string;
-  icon: string;          // lucide-react icon name
-  color: string;         // hex color
-  isIncome: boolean;     // true for income categories
+  icon: string; // lucide-react icon name
+  color: string; // hex color
+  isIncome: boolean; // true for income categories
   createdAt: Date;
 }
 ```
 
 ### Budget
+
 ```typescript
 interface Budget {
   id: string;
   categoryId: string;
-  amount: number;        // monthly limit
-  month: string;         // YYYY-MM format
+  amount: number; // monthly limit
+  month: string; // YYYY-MM format
 }
 ```
 
 ## Key Dependencies
+
 - `dexie` — IndexedDB wrapper
 - `react-hook-form` + `@hookform/resolvers` + `zod` — forms
 - `date-fns` — date utilities
