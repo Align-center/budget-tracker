@@ -16,12 +16,38 @@ export class BudgetTrackerDB extends Dexie {
     this.version(1).stores({
       // Primary key is 'id' (UUID string)
       // Indexes for common query patterns
-      transactions: 'id, date, categoryId, [date+categoryId], month',
+      // 'month' is a stored field (auto-populated via hook), not just a computed getter
+      transactions: 'id, date, categoryId, month, [date+categoryId]',
       categories: 'id, name, isIncome',
+      // For budgets, month is only meaningful for monthly periods; store as field for indexing
       budgets: 'id, categoryId, month, [categoryId+month]',
     });
 
-    // Define computed 'month' field for transactions (derived from date)
+    // Auto-populate 'month' field from 'date' for transactions
+    this.transactions.hook('creating', (primKey, obj, trans) => {
+      if (obj.date && !obj.month) {
+        obj.month = obj.date.slice(0, 7); // YYYY-MM
+      }
+    });
+    this.transactions.hook('updating', (mods, primKey, obj, trans) => {
+      if (mods.date && !mods.month) {
+        mods.month = mods.date.slice(0, 7);
+      }
+    });
+
+    // Auto-populate 'month' field from 'startDate' for budgets (monthly periods only)
+    this.budgets.hook('creating', (primKey, obj, trans) => {
+      if (obj.startDate && !obj.month && obj.period === 'monthly') {
+        obj.month = obj.startDate.slice(0, 7);
+      }
+    });
+    this.budgets.hook('updating', (mods, primKey, obj, trans) => {
+      if (mods.startDate && !mods.month && (mods.period === 'monthly' || obj.period === 'monthly')) {
+        mods.month = mods.startDate.slice(0, 7);
+      }
+    });
+
+    // Define entity classes with computed properties for convenience
     this.transactions.mapToClass(TransactionEntity);
     this.categories.mapToClass(CategoryEntity);
     this.budgets.mapToClass(BudgetEntity);
@@ -39,12 +65,14 @@ class TransactionEntity implements TransactionFormData {
   description!: string;
   categoryId!: string;
   date!: string; // YYYY-MM-DD
+  month!: string; // YYYY-MM (auto-populated via hook)
   createdAt!: string;
   updatedAt!: string;
 
   // Computed property for month-based queries (YYYY-MM)
-  get month(): string {
-    return this.date.slice(0, 7);
+  // Returns stored month field; falls back to deriving from date
+  get monthComputed(): string {
+    return this.month ?? this.date.slice(0, 7);
   }
 }
 
@@ -69,12 +97,14 @@ class BudgetEntity implements BudgetFormData {
   period!: 'weekly' | 'monthly' | 'yearly';
   startDate!: string;
   endDate!: string;
+  month?: string; // YYYY-MM (auto-populated for monthly periods via hook)
   createdAt!: string;
   updatedAt!: string;
 
   // For monthly budgets, month is derived from startDate
-  get month(): string {
-    return this.startDate.slice(0, 7);
+  // For weekly/yearly, month may be undefined (not a meaningful query dimension)
+  get monthComputed(): string | undefined {
+    return this.month ?? (this.period === 'monthly' ? this.startDate.slice(0, 7) : undefined);
   }
 }
 
