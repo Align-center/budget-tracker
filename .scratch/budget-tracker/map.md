@@ -1,6 +1,7 @@
 # Budget Tracker - Effort Map
 
 ## Branches
+
 - **foundation** → `issues/01-project-setup.md` → `issues/05-indexeddb-repositories.md`
 - **state** → `issues/06-context-providers.md` → `issues/08-initialize-app-state.md`
 - **ui-core** → `issues/09-ui-primitives.md` → `issues/10-layout-components.md`
@@ -11,6 +12,7 @@
 - **polish** → `issues/24-dashboard-page.md` → `issues/28-data-export.md`
 
 ## Fog
+
 - Exact UI/UX details for each page
 - Performance with large transaction lists
 - Migration strategy when adding self-hosted sync

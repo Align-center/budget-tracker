@@ -1,12 +1,15 @@
 # Issue 09: UI Primitives
 
 ## Type: task
+
 ## Status: open
 
 ## Description
+
 Create reusable `_primitive_` components using Radix UI and Tailwind.
 
 ## Tasks
+
 - [ ] Create `src/components/ui/button.tsx` — `_primitive_` with Slot + Tailwind variants
 - [ ] Create `src/components/ui/input.tsx` — `_primitive_` styled input
 - [ ] Create `src/components/ui/select.tsx` — `_primitive_` Radix Select wrapper
@@ -23,6 +26,7 @@ Create reusable `_primitive_` components using Radix UI and Tailwind.
 - [ ] Create `src/lib/utils/cn.ts` — `_cn_` utility (clsx + tailwind-merge)
 
 ## Acceptance Criteria
+
 - [ ] All `_primitive_` render without errors
 - [ ] Components follow consistent API
 - [ ] `_cn_` utility works correctly
