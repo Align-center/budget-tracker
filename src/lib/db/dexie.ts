@@ -46,6 +46,7 @@ export class BudgetTrackerDB extends Dexie {
         obj.month = obj.startDate.slice(0, 7);
       }
     });
+
     this.budgets.hook(
       'updating',
       (mods: Partial<BudgetWithMonth>, _primKey, obj: BudgetWithMonth) => {
