@@ -2,7 +2,7 @@
 
 ## Type: task
 
-## Status: open
+## Status: done
 
 ## Description
 
