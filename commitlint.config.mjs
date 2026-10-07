@@ -22,8 +22,7 @@ export default {
     'subject-case': [2, 'never', ['sentence-case', 'start-case', 'pascal-case', 'upper-case']],
     'subject-full-stop': [2, 'never', '.'],
     'header-max-length': [2, 'always', 100],
-    'body-leading-blank': [2, 'always'],
-    'body-max-line-length': [2, 'always', 100],
-    'footer-leading-blank': [2, 'always'],
+    'body-empty': [2, 'always'],
+    'footer-empty': [2, 'always'],
   },
 };

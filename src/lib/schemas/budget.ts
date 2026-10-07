@@ -21,15 +21,18 @@ const budgetBaseSchema = z.object({
 });
 
 /**
+ * Cross-field validation: startDate must be before or equal to endDate
+ */
+const startDateBeforeEndDate = (data: z.infer<typeof budgetBaseSchema>) =>
+  new Date(data.startDate) <= new Date(data.endDate);
+
+/**
  * Schema for creating/updating a budget (form input) with cross-field validation
  */
-export const budgetInputSchema = budgetBaseSchema.refine(
-  (data) => new Date(data.startDate) <= new Date(data.endDate),
-  {
-    message: 'Start date must be before or equal to end date',
-    path: ['startDate'],
-  }
-);
+export const budgetInputSchema = budgetBaseSchema.refine(startDateBeforeEndDate, {
+  message: 'Start date must be before or equal to end date',
+  path: ['startDate'],
+});
 
 /**
  * Schema for a full budget (including system-generated fields)
@@ -40,7 +43,7 @@ export const budgetSchema = budgetBaseSchema
     createdAt: z.string().datetime('Invalid createdAt timestamp'),
     updatedAt: z.string().datetime('Invalid updatedAt timestamp'),
   })
-  .refine((data) => new Date(data.startDate) <= new Date(data.endDate), {
+  .refine(startDateBeforeEndDate, {
     message: 'Start date must be before or equal to end date',
     path: ['startDate'],
   });
