@@ -125,11 +125,15 @@ function CategoryRow({
 
       <div className="min-w-0 flex-1">
         <p className="truncate font-medium text-zinc-900 dark:text-zinc-100">{category.name}</p>
-        <p className="text-sm text-zinc-500 capitalize dark:text-zinc-400">{category.type}</p>
       </div>
 
-      <div className="flex items-center gap-2 font-mono text-sm text-zinc-500 dark:text-zinc-400">
-        <span>{category.color}</span>
+      <div className="flex items-center gap-2">
+        <span
+          className="h-4 w-4 rounded border"
+          style={{ backgroundColor: category.color }}
+          aria-label={`Color: ${category.color}`}
+        />
+        <span className="font-mono text-sm text-zinc-500 dark:text-zinc-400">{category.color}</span>
       </div>
 
       <div className="flex items-center gap-1">

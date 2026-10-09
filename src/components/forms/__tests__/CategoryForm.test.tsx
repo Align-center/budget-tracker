@@ -14,7 +14,6 @@ const validCategoryInput: CategoryInput = {
   name: 'Food',
   icon: 'Utensils',
   color: '#FF5733',
-  type: 'expense',
 };
 
 describe('CategoryForm', () => {
@@ -27,7 +26,6 @@ describe('CategoryForm', () => {
 
     expect(screen.getByRole('heading', { name: 'Add Category' })).toBeInTheDocument();
     expect(screen.getByLabelText(/name \*/i)).toHaveValue('');
-    expect(screen.getByRole('group', { name: /type/i })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /select icon/i })).toBeInTheDocument();
     expect(screen.getByLabelText(/pick a color/i)).toBeInTheDocument();
   });
@@ -107,7 +105,6 @@ describe('CategoryForm', () => {
     render(<CategoryForm {...defaultProps} />);
 
     await user.type(screen.getByLabelText(/name \*/i), 'Food');
-    await user.click(screen.getByRole('radio', { name: /expense/i }));
 
     // Open icon picker and select an icon
     await user.click(screen.getByRole('button', { name: /select icon/i }));
@@ -125,7 +122,6 @@ describe('CategoryForm', () => {
           name: 'Food',
           icon: 'Utensils',
           color: '#ff5733',
-          type: 'expense',
         })
       );
     });

@@ -20,7 +20,6 @@ const mockCategories: CategoryFormData[] = [
     name: 'Food',
     icon: 'Utensils',
     color: '#FF5733',
-    type: 'expense',
     createdAt: '2024-01-01T00:00:00.000Z',
     updatedAt: '2024-01-01T00:00:00.000Z',
   },
@@ -29,7 +28,6 @@ const mockCategories: CategoryFormData[] = [
     name: 'Salary',
     icon: 'Briefcase',
     color: '#3B82F6',
-    type: 'income',
     createdAt: '2024-01-02T00:00:00.000Z',
     updatedAt: '2024-01-02T00:00:00.000Z',
   },
@@ -39,7 +37,6 @@ const mockCategoryInput: CategoryInput = {
   name: 'Transport',
   icon: 'Car',
   color: '#10B981',
-  type: 'expense',
 };
 
 describe('useCategories', () => {

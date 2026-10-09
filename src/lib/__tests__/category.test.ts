@@ -6,7 +6,6 @@ describe('Category Schemas', () => {
     name: 'Food',
     icon: 'Utensils',
     color: '#FF5733',
-    type: 'expense',
   };
 
   describe('categoryInputSchema', () => {
@@ -73,24 +72,6 @@ describe('Category Schemas', () => {
         const result = categoryInputSchema.safeParse({ ...validCategoryInput, color });
         expect(result.success).toBe(true);
       });
-    });
-
-    it('rejects invalid type', () => {
-      const result = categoryInputSchema.safeParse({ ...validCategoryInput, type: 'invalid' });
-      expect(result.success).toBe(false);
-      if (!result.success) {
-        expect(result.error.issues[0].path).toContain('type');
-      }
-    });
-
-    it('accepts both income and expense types', () => {
-      const incomeResult = categoryInputSchema.safeParse({ ...validCategoryInput, type: 'income' });
-      const expenseResult = categoryInputSchema.safeParse({
-        ...validCategoryInput,
-        type: 'expense',
-      });
-      expect(incomeResult.success).toBe(true);
-      expect(expenseResult.success).toBe(true);
     });
   });
 

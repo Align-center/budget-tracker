@@ -33,7 +33,6 @@ export function CategoryForm({
       name: initialData?.name ?? '',
       icon: initialData?.icon ?? '',
       color: initialData?.color ?? '#3B82F6',
-      type: initialData?.type ?? 'expense',
     },
   });
 
@@ -103,40 +102,6 @@ export function CategoryForm({
               </p>
             )}
           </div>
-
-          {/* Type Select */}
-          <fieldset>
-            <legend className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
-              Type <span className="text-red-500">*</span>
-            </legend>
-            <div className="flex gap-4">
-              <label className="flex cursor-pointer items-center gap-2">
-                <input
-                  type="radio"
-                  id="type-income"
-                  value="income"
-                  {...register('type')}
-                  className="h-4 w-4 border-zinc-300 text-blue-600 focus:ring-blue-500"
-                />
-                <span className="text-sm text-zinc-700 dark:text-zinc-300">Income</span>
-              </label>
-              <label className="flex cursor-pointer items-center gap-2">
-                <input
-                  type="radio"
-                  id="type-expense"
-                  value="expense"
-                  {...register('type')}
-                  className="h-4 w-4 border-zinc-300 text-blue-600 focus:ring-blue-500"
-                />
-                <span className="text-sm text-zinc-700 dark:text-zinc-300">Expense</span>
-              </label>
-            </div>
-            {errors.type && (
-              <p className="mt-1 text-sm text-red-500" role="alert">
-                {errors.type.message}
-              </p>
-            )}
-          </fieldset>
 
           {/* Icon Picker */}
           <div>

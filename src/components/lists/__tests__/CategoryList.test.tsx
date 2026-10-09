@@ -10,7 +10,6 @@ const mockCategories: CategoryFormData[] = [
     name: 'Food',
     icon: 'Utensils',
     color: '#FF5733',
-    type: 'expense',
     createdAt: '2024-01-01T00:00:00.000Z',
     updatedAt: '2024-01-01T00:00:00.000Z',
   },
@@ -19,7 +18,6 @@ const mockCategories: CategoryFormData[] = [
     name: 'Salary',
     icon: 'Briefcase',
     color: '#3B82F6',
-    type: 'income',
     createdAt: '2024-01-02T00:00:00.000Z',
     updatedAt: '2024-01-02T00:00:00.000Z',
   },
@@ -65,8 +63,6 @@ describe('CategoryList', () => {
 
     expect(screen.getByText('Food')).toBeInTheDocument();
     expect(screen.getByText('Salary')).toBeInTheDocument();
-    expect(screen.getByText('expense')).toBeInTheDocument();
-    expect(screen.getByText('income')).toBeInTheDocument();
     expect(screen.getByText('#FF5733')).toBeInTheDocument();
     expect(screen.getByText('#3B82F6')).toBeInTheDocument();
   });

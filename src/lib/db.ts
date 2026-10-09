@@ -7,7 +7,7 @@ export class BudgetTrackerDB extends Dexie {
   constructor() {
     super('BudgetTrackerDB');
     this.version(1).stores({
-      categories: 'id, name, type, createdAt, updatedAt',
+      categories: 'id, name, icon, color, createdAt, updatedAt',
     });
   }
 }
