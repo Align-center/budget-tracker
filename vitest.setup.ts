@@ -58,75 +58,89 @@ vi.mock('dexie', () => {
 
 // Mock lucide-react icons as React components
 const createMockIcon = (name: string) => {
-  const MockIcon = ({ className, ...props }: React.SVGProps<SVGSVGElement>) =>
-    React.createElement('svg', {
-      'data-testid': `icon-${name.toLowerCase()}`,
-      className,
-      ...props,
-    });
+  const MockIcon = ({ className, children, ...props }: React.SVGProps<SVGSVGElement>) =>
+    React.createElement(
+      'svg',
+      {
+        'data-testid': `icon-${name.toLowerCase()}`,
+        className,
+        ...props,
+      },
+      children
+    );
   MockIcon.displayName = name;
   return MockIcon;
 };
 
-vi.mock('lucide-react', () => {
-  const icons = [
-    'Plus',
-    'X',
-    'ChevronDown',
-    'Check',
-    'Edit',
-    'Trash2',
-    'Home',
-    'Utensils',
-    'ShoppingCart',
-    'Car',
-    'Briefcase',
-    'Heart',
-    'GraduationCap',
-    'Gamepad2',
-    'Plane',
-    'Gift',
-    'CreditCard',
-    'DollarSign',
-    'Wallet',
-    'Banknote',
-    'Coins',
-    'PiggyBank',
-    'TrendingUp',
-    'TrendingDown',
-    'ShoppingBag',
-    'Receipt',
-    'Ticket',
-    'Film',
-    'Music',
-    'Camera',
-    'Book',
-    'Dumbbell',
-    'Coffee',
-    'Shirt',
-    'Zap',
-    'Leaf',
-    'Sun',
-    'Moon',
-    'Cloud',
-    'Droplet',
-    'Flame',
-    'Waves',
-    'Mountain',
-    'Trees',
-    'Flower',
-    'Apple',
-    'Pizza',
-    'Beer',
-    'Wine',
-    'UtensilsCrossed',
-  ];
-  const mockExports: Record<string, React.ComponentType<React.SVGProps<SVGSVGElement>>> = {};
-  for (const name of icons) {
-    mockExports[name] = createMockIcon(name);
-  }
-  return mockExports;
-});
+const iconNames = [
+  'Plus',
+  'X',
+  'ChevronDown',
+  'Check',
+  'Edit',
+  'Trash2',
+  'Home',
+  'Utensils',
+  'ShoppingCart',
+  'Car',
+  'Briefcase',
+  'Heart',
+  'GraduationCap',
+  'Gamepad2',
+  'Plane',
+  'Gift',
+  'CreditCard',
+  'DollarSign',
+  'Wallet',
+  'Banknote',
+  'Coins',
+  'PiggyBank',
+  'TrendingUp',
+  'TrendingDown',
+  'ShoppingBag',
+  'Receipt',
+  'Ticket',
+  'Film',
+  'Music',
+  'Camera',
+  'Book',
+  'Dumbbell',
+  'Coffee',
+  'Shirt',
+  'Zap',
+  'Leaf',
+  'Sun',
+  'Moon',
+  'Cloud',
+  'Droplet',
+  'Flame',
+  'Waves',
+  'Mountain',
+  'Trees',
+  'Flower',
+  'Apple',
+  'Pizza',
+  'Beer',
+  'Wine',
+  'UtensilsCrossed',
+];
+
+const mockExports: Record<string, React.ComponentType<React.SVGProps<SVGSVGElement>>> = {};
+for (const name of iconNames) {
+  mockExports[name] = createMockIcon(name);
+}
+
+// CATEGORY_ICONS array (same order as in icons.ts) - use the component functions, not strings
+const categoryIcons = iconNames.slice(6).map((name) => mockExports[name]);
+
+vi.mock('lucide-react', () => mockExports);
+
+// Mock @/lib/icons to re-export lucide-react mocks
+vi.mock('@/lib/icons', () => ({
+  ...mockExports,
+  CATEGORY_ICONS: categoryIcons,
+  ICON_MAP: mockExports,
+}));
 
 // Suppress console errors in tests
 const originalError = console.error;
