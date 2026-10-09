@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   X,
@@ -102,6 +102,53 @@ const ICONS = [
   UtensilsCrossed,
 ];
 
+const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
+  Home,
+  Utensils,
+  ShoppingCart,
+  Car,
+  Briefcase,
+  Heart,
+  GraduationCap,
+  Gamepad2,
+  Plane,
+  Gift,
+  CreditCard,
+  DollarSign,
+  Wallet,
+  Banknote,
+  Coins,
+  PiggyBank,
+  TrendingUp,
+  TrendingDown,
+  ShoppingBag,
+  Receipt,
+  Ticket,
+  Film,
+  Music,
+  Camera,
+  Book,
+  Dumbbell,
+  Coffee,
+  Shirt,
+  Zap,
+  Leaf,
+  Sun,
+  Moon,
+  Cloud,
+  Droplet,
+  Flame,
+  Waves,
+  Mountain,
+  Trees,
+  Flower,
+  Apple,
+  Pizza,
+  Beer,
+  Wine,
+  UtensilsCrossed,
+};
+
 interface CategoryFormProps {
   initialData?: Partial<CategoryInput>;
   onSubmit: (data: CategoryInput) => Promise<void>;
@@ -119,7 +166,7 @@ export function CategoryForm({
     register,
     handleSubmit,
     setValue,
-    watch,
+    control,
     formState: { errors, isSubmitting },
   } = useForm<CategoryInput>({
     resolver: zodResolver(categoryInputSchema),
@@ -131,8 +178,8 @@ export function CategoryForm({
     },
   });
 
-  const watchedIcon = watch('icon');
-  const watchedColor = watch('color');
+  const watchedIcon = useWatch({ control, name: 'icon' });
+  const watchedColor = useWatch({ control, name: 'color' });
 
   // Sync form values to local state for icon picker display
   useEffect(() => {
@@ -152,7 +199,7 @@ export function CategoryForm({
     await onSubmit(data);
   };
 
-  const IconComponent = ICONS.find((Icon) => Icon.displayName === watchedIcon) || Home;
+  const IconComponent = ICON_MAP[watchedIcon] || Home;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
