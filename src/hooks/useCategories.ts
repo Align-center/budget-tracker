@@ -20,6 +20,13 @@ export function useCategories(): UseCategoriesReturn {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const checkNameUnique = useCallback(
+    async (name: string, excludeId?: string): Promise<boolean> => {
+      return categoryDb.nameExists(name, excludeId);
+    },
+    []
+  );
+
   const refreshCategories = useCallback(async () => {
     try {
       setLoading(true);
@@ -42,7 +49,7 @@ export function useCategories(): UseCategoriesReturn {
     async (input: CategoryInput): Promise<CategoryFormData | null> => {
       try {
         setError(null);
-        const nameExists = await categoryDb.nameExists(input.name);
+        const nameExists = await checkNameUnique(input.name);
         if (nameExists) {
           setError('A category with this name already exists');
           return null;
@@ -57,7 +64,7 @@ export function useCategories(): UseCategoriesReturn {
         return null;
       }
     },
-    []
+    [checkNameUnique]
   );
 
   const updateCategory = useCallback(
@@ -65,7 +72,7 @@ export function useCategories(): UseCategoriesReturn {
       try {
         setError(null);
         if (input.name) {
-          const nameExists = await categoryDb.nameExists(input.name, id);
+          const nameExists = await checkNameUnique(input.name, id);
           if (nameExists) {
             setError('A category with this name already exists');
             return null;
@@ -85,7 +92,7 @@ export function useCategories(): UseCategoriesReturn {
         return null;
       }
     },
-    []
+    [checkNameUnique]
   );
 
   const deleteCategory = useCallback(async (id: string): Promise<boolean> => {
@@ -101,13 +108,6 @@ export function useCategories(): UseCategoriesReturn {
       return false;
     }
   }, []);
-
-  const checkNameUnique = useCallback(
-    async (name: string, excludeId?: string): Promise<boolean> => {
-      return categoryDb.nameExists(name, excludeId);
-    },
-    []
-  );
 
   return {
     categories,
