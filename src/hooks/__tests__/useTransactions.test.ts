@@ -49,6 +49,9 @@ const mockTransactions: TransactionFormData[] = [
   },
 ];
 
+// Expected order after sorting by date descending (newest first)
+const mockTransactionsSorted = [...mockTransactions].sort((a, b) => (b.date > a.date ? 1 : -1));
+
 const validInput: TransactionInput = {
   amount: -50.0,
   categoryId: 'cat-1',
@@ -103,7 +106,7 @@ describe('useTransactions', () => {
       expect(result.current.loading).toBe(false);
     });
 
-    expect(result.current.transactions).toEqual(mockTransactions);
+    expect(result.current.transactions).toEqual(mockTransactionsSorted);
     expect(result.current.error).toBeNull();
     expect(transactionDb.getAll).toHaveBeenCalledTimes(1);
   });
@@ -119,6 +122,25 @@ describe('useTransactions', () => {
 
     expect(result.current.error).toBe('DB error');
     expect(result.current.transactions).toEqual([]);
+  });
+
+  it('sorts transactions by date descending on initial load', async () => {
+    // Provide transactions in non-sorted order
+    const unsortedTransactions = [
+      mockTransactions[1], // Jan 10
+      mockTransactions[2], // Jan 20
+      mockTransactions[0], // Jan 15
+    ];
+    (transactionDb.getAll as MockFn).mockResolvedValue(unsortedTransactions);
+
+    const { result } = renderHook(() => useTransactions());
+
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false);
+    });
+
+    // Should be sorted by date descending (newest first)
+    expect(result.current.transactions).toEqual(mockTransactionsSorted);
   });
 
   it('adds a transaction successfully', async () => {
@@ -140,6 +162,8 @@ describe('useTransactions', () => {
     expect(addResult).toEqual(newTransaction);
     expect(transactionDb.create).toHaveBeenCalledWith(validInput);
     expect(result.current.transactions).toContainEqual(newTransaction);
+    // Should be sorted with new transaction first (newest date)
+    expect(result.current.transactions[0]).toEqual(newTransaction);
     expect(result.current.error).toBeNull();
   });
 
@@ -253,7 +277,7 @@ describe('useTransactions', () => {
     });
 
     expect(updateResult).toBeNull();
-    expect(result.current.transactions).toEqual(mockTransactions); // Unchanged
+    expect(result.current.transactions).toEqual(mockTransactionsSorted); // Unchanged
   });
 
   it('sets error when updateTransaction throws', async () => {
@@ -335,49 +359,6 @@ describe('useTransactions', () => {
     expect(result.current.error).toBe('Delete failed');
   });
 
-  it('refreshTransactions reloads data', async () => {
-    (transactionDb.getAll as MockFn).mockResolvedValue(mockTransactions);
-
-    const { result } = renderHook(() => useTransactions());
-
-    await waitFor(() => {
-      expect(result.current.loading).toBe(false);
-    });
-
-    // Change mock return value
-    const newTransactions = [...mockTransactions, newTransaction];
-    (transactionDb.getAll as MockFn).mockResolvedValue(newTransactions);
-
-    await act(async () => {
-      await result.current.refreshTransactions();
-    });
-
-    expect(transactionDb.getAll).toHaveBeenCalledTimes(2);
-    expect(result.current.transactions).toEqual(newTransactions);
-  });
-
-  it('clears error on successful operation after previous error', async () => {
-    (transactionDb.getAll as MockFn).mockRejectedValueOnce(new Error('Initial load failed'));
-
-    const { result } = renderHook(() => useTransactions());
-
-    await waitFor(() => {
-      expect(result.current.loading).toBe(false);
-    });
-
-    expect(result.current.error).toBe('Initial load failed');
-
-    // Now succeed
-    (transactionDb.getAll as MockFn).mockResolvedValue(mockTransactions);
-
-    await act(async () => {
-      await result.current.refreshTransactions();
-    });
-
-    expect(result.current.error).toBeNull();
-    expect(result.current.transactions).toEqual(mockTransactions);
-  });
-
   it('returns correct function references (stable across renders)', async () => {
     (transactionDb.getAll as MockFn).mockResolvedValue(mockTransactions);
 
@@ -390,14 +371,12 @@ describe('useTransactions', () => {
     const addFn = result.current.addTransaction;
     const updateFn = result.current.updateTransaction;
     const deleteFn = result.current.deleteTransaction;
-    const refreshFn = result.current.refreshTransactions;
 
     rerender();
 
     expect(result.current.addTransaction).toBe(addFn);
     expect(result.current.updateTransaction).toBe(updateFn);
     expect(result.current.deleteTransaction).toBe(deleteFn);
-    expect(result.current.refreshTransactions).toBe(refreshFn);
   });
 
   it('handles multiple rapid addTransaction calls', async () => {

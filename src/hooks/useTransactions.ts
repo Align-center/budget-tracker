@@ -14,7 +14,6 @@ interface UseTransactionsReturn {
     input: Partial<TransactionInput>
   ) => Promise<TransactionFormData | null>;
   deleteTransaction: (id: string) => Promise<boolean>;
-  refreshTransactions: () => Promise<void>;
 }
 
 export function useTransactions(): UseTransactionsReturn {
@@ -22,18 +21,26 @@ export function useTransactions(): UseTransactionsReturn {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  /**
+   * Sort transactions by date descending (newest first)
+   */
+  const sortByDateDesc = useCallback(
+    (txns: TransactionFormData[]) => [...txns].sort((a, b) => (b.date > a.date ? 1 : -1)),
+    []
+  );
+
   const refreshTransactions = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
       const data = await transactionDb.getAll();
-      setTransactions(data);
+      setTransactions(sortByDateDesc(data));
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load transactions');
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [sortByDateDesc]);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -45,16 +52,14 @@ export function useTransactions(): UseTransactionsReturn {
       try {
         setError(null);
         const newTransaction = await transactionDb.create(input);
-        setTransactions((prev) =>
-          [...prev, newTransaction].sort((a, b) => (b.date > a.date ? 1 : -1))
-        );
+        setTransactions((prev) => sortByDateDesc([...prev, newTransaction]));
         return newTransaction;
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to create transaction');
         return null;
       }
     },
-    []
+    [sortByDateDesc]
   );
 
   const updateTransaction = useCallback(
@@ -63,9 +68,7 @@ export function useTransactions(): UseTransactionsReturn {
         setError(null);
         const updated = await transactionDb.update(id, input);
         if (updated) {
-          setTransactions((prev) =>
-            prev.map((t) => (t.id === id ? updated : t)).sort((a, b) => (b.date > a.date ? 1 : -1))
-          );
+          setTransactions((prev) => sortByDateDesc(prev.map((t) => (t.id === id ? updated : t))));
         }
         return updated ?? null;
       } catch (err) {
@@ -73,7 +76,7 @@ export function useTransactions(): UseTransactionsReturn {
         return null;
       }
     },
-    []
+    [sortByDateDesc]
   );
 
   const deleteTransaction = useCallback(async (id: string): Promise<boolean> => {
@@ -97,6 +100,5 @@ export function useTransactions(): UseTransactionsReturn {
     addTransaction,
     updateTransaction,
     deleteTransaction,
-    refreshTransactions,
   };
 }

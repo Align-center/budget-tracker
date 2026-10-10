@@ -162,7 +162,8 @@ describe('TransactionForm', () => {
     await user.click(screen.getByRole('option', { name: 'Food' }));
 
     const noteInput = screen.getByLabelText(/note \(optional\)/i);
-    await user.type(noteInput, 'a'.repeat(256));
+    // Use fireEvent for faster input of long text
+    fireEvent.change(noteInput, { target: { value: 'a'.repeat(256) } });
 
     const submitButton = screen.getByRole('button', { name: /create/i });
     await user.click(submitButton);
@@ -170,7 +171,7 @@ describe('TransactionForm', () => {
     await waitFor(() => {
       expect(screen.getByText(/note is too long/i)).toBeInTheDocument();
     });
-  }, 10000);
+  }, 15000);
 
   it('submits valid form data (expense)', async () => {
     const user = userEvent.setup();

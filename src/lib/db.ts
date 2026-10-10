@@ -77,14 +77,6 @@ export const transactionDb = {
     return db.transactions.orderBy('date').reverse().toArray();
   },
 
-  async getById(id: string): Promise<TransactionFormData | undefined> {
-    return db.transactions.get(id);
-  },
-
-  async getByCategoryId(categoryId: string): Promise<TransactionFormData[]> {
-    return db.transactions.where('categoryId').equals(categoryId).toArray();
-  },
-
   async create(
     input: Omit<TransactionFormData, 'id' | 'createdAt' | 'updatedAt'>
   ): Promise<TransactionFormData> {

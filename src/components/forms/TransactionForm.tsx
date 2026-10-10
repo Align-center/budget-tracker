@@ -1,11 +1,10 @@
 'use client';
 
-import { useEffect } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { X, Calendar, ChevronDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { ICON_MAP } from '@/lib/icons';
+import { CategoryBadge } from '@/components/ui/CategoryBadge';
 import type { TransactionInput } from '@/lib/schemas';
 import { transactionInputSchema } from '@/lib/schemas';
 import { useCategories } from '@/hooks/useCategories';
@@ -44,16 +43,7 @@ export function TransactionForm({
   const watchedCategoryId = useWatch({ control, name: 'categoryId' });
   const watchedNote = useWatch({ control, name: 'note' });
 
-  // Sync form values to local state for category display
-  useEffect(() => {
-    if (initialData?.categoryId) setValue('categoryId', initialData.categoryId);
-    if (initialData?.amount) setValue('amount', initialData.amount);
-    if (initialData?.date) setValue('date', initialData.date);
-    if (initialData?.note !== undefined) setValue('note', initialData.note);
-  }, [initialData, setValue]);
-
   const selectedCategory = categories.find((c) => c.id === watchedCategoryId);
-  const SelectedCategoryIcon = selectedCategory ? ICON_MAP[selectedCategory.icon] : null;
 
   const handleCategorySelect = (categoryId: string) => {
     setValue('categoryId', categoryId, { shouldValidate: true });
@@ -143,18 +133,13 @@ export function TransactionForm({
                     disabled={categories.length === 0}
                   >
                     <div className="flex items-center gap-3">
-                      {selectedCategory && SelectedCategoryIcon ? (
-                        <>
-                          <div
-                            className="flex h-8 w-8 items-center justify-center rounded-lg"
-                            style={{ backgroundColor: selectedCategory.color }}
-                          >
-                            <SelectedCategoryIcon className="h-5 w-5 text-white" />
-                          </div>
-                          <span className="text-zinc-700 dark:text-zinc-300">
-                            {selectedCategory.name}
-                          </span>
-                        </>
+                      {selectedCategory ? (
+                        <CategoryBadge
+                          name={selectedCategory.name}
+                          icon={selectedCategory.icon}
+                          color={selectedCategory.color}
+                          size="md"
+                        />
                       ) : (
                         <span className="text-zinc-500 dark:text-zinc-400">Select category</span>
                       )}
@@ -171,7 +156,6 @@ export function TransactionForm({
                     <div className="space-y-1">
                       {categories.map((category) => {
                         const isSelected = watchedCategoryId === category.id;
-                        const CategoryIcon = ICON_MAP[category.icon];
                         return (
                           <button
                             key={category.id}
@@ -186,13 +170,12 @@ export function TransactionForm({
                                 : 'text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-700'
                             )}
                           >
-                            <div
-                              className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg"
-                              style={{ backgroundColor: category.color }}
-                            >
-                              {CategoryIcon && <CategoryIcon className="h-5 w-5 text-white" />}
-                            </div>
-                            <span className="truncate">{category.name}</span>
+                            <CategoryBadge
+                              name={category.name}
+                              icon={category.icon}
+                              color={category.color}
+                              size="sm"
+                            />
                           </button>
                         );
                       })}

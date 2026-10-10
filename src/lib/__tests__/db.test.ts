@@ -30,8 +30,6 @@ describe('Transaction DB Operations', () => {
   describe('transactionDb', () => {
     it('should have all required methods', () => {
       expect(typeof transactionDb.getAll).toBe('function');
-      expect(typeof transactionDb.getById).toBe('function');
-      expect(typeof transactionDb.getByCategoryId).toBe('function');
       expect(typeof transactionDb.create).toBe('function');
       expect(typeof transactionDb.update).toBe('function');
       expect(typeof transactionDb.delete).toBe('function');
