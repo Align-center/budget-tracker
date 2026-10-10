@@ -5,66 +5,59 @@
 import { z } from 'zod';
 
 /**
- * Schema for transaction type enum
+ * Get today's date in YYYY-MM-DD format for max date validation
  */
-export const transactionTypeSchema = z.enum(['income', 'expense']);
+const getTodayString = () => new Date().toISOString().split('T')[0];
+
+/**
+ * Schema for transaction date validation (YYYY-MM-DD, ≤ today)
+ */
+const transactionDateSchema = z
+  .string()
+  .regex(/^\d{4}-\d{2}-\d{2}$/, 'Date must be in YYYY-MM-DD format')
+  .refine((date) => date <= getTodayString(), 'Date cannot be in the future');
 
 /**
  * Base schema for transaction (without cross-field validation)
  */
 const transactionInputBaseSchema = z.object({
-  type: transactionTypeSchema,
-  amount: z.number(),
-  description: z.string().min(1, 'Description is required').max(255, 'Description is too long'),
+  amount: z.number().refine((val) => val !== 0, 'Amount must not be zero'),
   categoryId: z.string().min(1, 'Category is required'),
-  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Date must be in YYYY-MM-DD format'),
+  date: transactionDateSchema,
+  note: z.string().max(255, 'Note is too long').optional(),
 });
-
-/**
- * Cross-field validation: amount sign must match type
- * - income: amount must be positive
- * - expense: amount must be negative
- */
-const amountMatchesType = (data: z.infer<typeof transactionInputBaseSchema>) => {
-  if (data.type === 'income') {
-    return data.amount > 0;
-  }
-  return data.amount < 0;
-};
 
 /**
  * Schema for creating/updating a transaction (form input)
  */
-export const transactionInputSchema = transactionInputBaseSchema
-  .refine((data) => data.amount !== 0, {
-    message: 'Amount must not be zero',
-    path: ['amount'],
-  })
-  .refine(amountMatchesType, {
-    message: 'Amount must be positive for income and negative for expense',
-    path: ['amount'],
-  });
+export const transactionInputSchema = transactionInputBaseSchema;
 
 /**
  * Schema for a full transaction (including system-generated fields)
  */
-export const transactionSchema = transactionInputBaseSchema
-  .extend({
-    id: z.string().uuid('Invalid transaction ID'),
-    createdAt: z.string().datetime('Invalid createdAt timestamp'),
-    updatedAt: z.string().datetime('Invalid updatedAt timestamp'),
-  })
-  .refine((data) => data.amount !== 0, {
-    message: 'Amount must not be zero',
-    path: ['amount'],
-  })
-  .refine(amountMatchesType, {
-    message: 'Amount must be positive for income and negative for expense',
-    path: ['amount'],
-  });
+export const transactionSchema = transactionInputBaseSchema.extend({
+  id: z.string().uuid('Invalid transaction ID'),
+  createdAt: z.string().datetime('Invalid createdAt timestamp'),
+  updatedAt: z.string().datetime('Invalid updatedAt timestamp'),
+});
 
 /**
  * Type inference from schemas
  */
 export type TransactionInput = z.infer<typeof transactionInputSchema>;
 export type TransactionFormData = z.infer<typeof transactionSchema>;
+
+/**
+ * Helper to determine transaction type from amount
+ * Positive = income, Negative = expense
+ */
+export const getTransactionType = (amount: number): 'income' | 'expense' =>
+  amount > 0 ? 'income' : 'expense';
+
+/**
+ * Helper to format amount for display (positive for income, negative for expense)
+ */
+export const formatTransactionAmount = (amount: number): string => {
+  const sign = amount > 0 ? '+' : '';
+  return `${sign}${amount.toFixed(2)}`;
+};
