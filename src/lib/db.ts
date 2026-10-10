@@ -1,13 +1,15 @@
 import Dexie, { Table } from 'dexie';
-import type { CategoryFormData } from '@/lib/schemas';
+import type { CategoryFormData, TransactionFormData } from '@/lib/schemas';
 
 export class BudgetTrackerDB extends Dexie {
   categories!: Table<CategoryFormData, string>;
+  transactions!: Table<TransactionFormData, string>;
 
   constructor() {
     super('BudgetTrackerDB');
     this.version(1).stores({
       categories: 'id, name, icon, color, createdAt, updatedAt',
+      transactions: 'id, categoryId, date, amount, createdAt, updatedAt',
     });
   }
 }
@@ -64,5 +66,57 @@ export const categoryDb = {
   async nameExists(name: string, excludeId?: string): Promise<boolean> {
     const category = await db.categories.where('name').equalsIgnoreCase(name).first();
     return category !== undefined && category.id !== excludeId;
+  },
+};
+
+/**
+ * Transaction CRUD operations
+ */
+export const transactionDb = {
+  async getAll(): Promise<TransactionFormData[]> {
+    return db.transactions.orderBy('date').reverse().toArray();
+  },
+
+  async getById(id: string): Promise<TransactionFormData | undefined> {
+    return db.transactions.get(id);
+  },
+
+  async getByCategoryId(categoryId: string): Promise<TransactionFormData[]> {
+    return db.transactions.where('categoryId').equals(categoryId).toArray();
+  },
+
+  async create(
+    input: Omit<TransactionFormData, 'id' | 'createdAt' | 'updatedAt'>
+  ): Promise<TransactionFormData> {
+    const now = new Date().toISOString();
+    const transaction: TransactionFormData = {
+      ...input,
+      id: crypto.randomUUID(),
+      createdAt: now,
+      updatedAt: now,
+    };
+    await db.transactions.add(transaction);
+    return transaction;
+  },
+
+  async update(
+    id: string,
+    input: Partial<Omit<TransactionFormData, 'id' | 'createdAt'>>
+  ): Promise<TransactionFormData | undefined> {
+    const existing = await db.transactions.get(id);
+    if (!existing) return undefined;
+
+    const updated: TransactionFormData = {
+      ...existing,
+      ...input,
+      updatedAt: new Date().toISOString(),
+    };
+    await db.transactions.put(updated);
+    return updated;
+  },
+
+  async delete(id: string): Promise<boolean> {
+    const deleted = await db.transactions.delete(id);
+    return (deleted ?? 0) > 0;
   },
 };

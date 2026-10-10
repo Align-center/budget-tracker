@@ -4,7 +4,12 @@
  */
 
 // Transaction schemas and types
-export { transactionTypeSchema, transactionInputSchema, transactionSchema } from './transaction';
+export {
+  transactionInputSchema,
+  transactionSchema,
+  getTransactionType,
+  formatTransactionAmount,
+} from './transaction';
 export type { TransactionInput, TransactionFormData } from './transaction';
 
 // Category schemas and types
