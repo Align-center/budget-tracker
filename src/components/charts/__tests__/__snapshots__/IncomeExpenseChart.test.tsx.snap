@@ -1,0 +1,92 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`IncomeExpenseChart > matches snapshot with data 1`] = `
+<div>
+  <div
+    aria-label="Income vs expense chart. Income: $150.00, Expense: $70.50, Balance: $79.50"
+    class="rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-700 dark:bg-zinc-800  "
+    role="img"
+  >
+    <h3
+      class="mb-4 text-lg font-semibold text-zinc-900 dark:text-zinc-100"
+    >
+      Income vs Expense
+    </h3>
+    <div
+      style="height: 280px; position: relative;"
+    />
+  </div>
+</div>
+`;
+
+exports[`IncomeExpenseChart > matches snapshot with empty data 1`] = `
+<div>
+  <div
+    aria-label="No income or expense data yet"
+    class="flex flex-col items-center justify-center rounded-xl border border-zinc-200 bg-white px-4 py-12 dark:border-zinc-700 dark:bg-zinc-800"
+    role="img"
+  >
+    <div
+      aria-hidden="true"
+      class="mb-4 h-12 w-12 text-zinc-300 dark:text-zinc-600"
+    >
+      <svg
+        aria-hidden="true"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="1.5"
+        />
+      </svg>
+    </div>
+    <h3
+      class="mb-2 text-center text-lg font-medium text-zinc-900 dark:text-zinc-100"
+    >
+      No income or expense data yet
+    </h3>
+  </div>
+</div>
+`;
+
+exports[`IncomeExpenseChart > matches snapshot with only expense 1`] = `
+<div>
+  <div
+    aria-label="Income vs expense chart. Income: $0.00, Expense: $50.00, Balance: $50.00"
+    class="rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-700 dark:bg-zinc-800  "
+    role="img"
+  >
+    <h3
+      class="mb-4 text-lg font-semibold text-zinc-900 dark:text-zinc-100"
+    >
+      Income vs Expense
+    </h3>
+    <div
+      style="height: 280px; position: relative;"
+    />
+  </div>
+</div>
+`;
+
+exports[`IncomeExpenseChart > matches snapshot with only income 1`] = `
+<div>
+  <div
+    aria-label="Income vs expense chart. Income: $100.00, Expense: $0.00, Balance: $100.00"
+    class="rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-700 dark:bg-zinc-800  "
+    role="img"
+  >
+    <h3
+      class="mb-4 text-lg font-semibold text-zinc-900 dark:text-zinc-100"
+    >
+      Income vs Expense
+    </h3>
+    <div
+      style="height: 280px; position: relative;"
+    />
+  </div>
+</div>
+`;

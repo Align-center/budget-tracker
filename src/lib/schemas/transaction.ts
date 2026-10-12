@@ -61,3 +61,6 @@ export const formatTransactionAmount = (amount: number): string => {
   const sign = amount > 0 ? '+' : '';
   return `${sign}${amount.toFixed(2)}`;
 };
+
+// Re-export shared formatCurrency for convenience
+export { formatCurrency } from '@/lib/utils';

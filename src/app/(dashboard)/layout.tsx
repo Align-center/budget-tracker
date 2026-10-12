@@ -1,9 +1,10 @@
 import Link from 'next/link';
-import { Home, Wallet, Target, Settings } from 'lucide-react';
+import { Home, Wallet, Receipt, Target, Settings } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const navigation = [
-  { name: 'Dashboard', href: '/', icon: Home },
+  { name: 'Dashboard', href: '/dashboard', icon: Home },
+  { name: 'Transactions', href: '/transactions', icon: Receipt },
   { name: 'Categories', href: '/categories', icon: Wallet },
   { name: 'Budgets', href: '/budgets', icon: Target },
   { name: 'Settings', href: '/settings', icon: Settings },

@@ -9,6 +9,7 @@ export {
   transactionSchema,
   getTransactionType,
   formatTransactionAmount,
+  formatCurrency,
 } from './transaction';
 export type { TransactionInput, TransactionFormData } from './transaction';
 
