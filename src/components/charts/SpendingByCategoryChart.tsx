@@ -1,9 +1,11 @@
 'use client';
 
-import '@/components/charts/chartRegistration';
+import '@/components/charts/init';
 import dynamic from 'next/dynamic';
 import type { SpendingByCategoryItem } from '@/hooks/useReports';
-import { chartTheme, formatCurrency } from './chartTheme';
+import { chartTheme, withOpacity } from './chartTheme';
+import { EmptyState } from '@/components/ui/EmptyState';
+import { formatCurrency } from '@/lib/utils';
 import type { TooltipItem } from 'chart.js';
 
 // SSR-safe dynamic import for Chart.js components
@@ -26,27 +28,20 @@ export type { SpendingByCategoryChartProps };
 export function SpendingByCategoryChart({ data, className = '' }: SpendingByCategoryChartProps) {
   if (!data.length) {
     return (
-      <div
-        className={`flex flex-col items-center justify-center rounded-xl border border-zinc-200 bg-white px-4 py-12 dark:border-zinc-700 dark:bg-zinc-800 ${className} `}
-        role="img"
-        aria-label="No spending data available"
-      >
-        <svg
-          className="mb-4 h-12 w-12 text-zinc-300 dark:text-zinc-600"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-          aria-hidden="true"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={1.5}
-            d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
-          />
-        </svg>
-        <p className="text-center text-zinc-500 dark:text-zinc-400">No spending data yet</p>
-      </div>
+      <EmptyState
+        className={className}
+        icon={
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={1.5}
+              d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+            />
+          </svg>
+        }
+        title="No spending data yet"
+      />
     );
   }
 
@@ -55,6 +50,8 @@ export function SpendingByCategoryChart({ data, className = '' }: SpendingByCate
   const amounts = data.map((d) => d.amount);
   const colors = data.map((d) => d.categoryColor);
 
+  const { bar } = chartTheme.constants;
+
   const chartData = {
     labels,
     datasets: [
@@ -62,18 +59,18 @@ export function SpendingByCategoryChart({ data, className = '' }: SpendingByCate
         label: 'Spending',
         data: amounts,
         backgroundColor: colors,
-        borderColor: colors.map((c) => c + 'CC'), // 80% opacity for border
+        borderColor: colors.map((c) => withOpacity(c, bar.borderOpacity)),
         borderWidth: 1,
-        borderRadius: 6,
+        borderRadius: bar.borderRadius,
         borderSkipped: false,
-        maxBarThickness: 40,
+        maxBarThickness: bar.maxBarThickness,
       },
     ],
   };
 
   const options = {
-    indexAxis: 'y' as const,
     ...chartTheme.defaultOptions,
+    ...chartTheme.barOverrides,
     plugins: {
       ...chartTheme.defaultOptions.plugins,
       tooltip: {
@@ -88,9 +85,10 @@ export function SpendingByCategoryChart({ data, className = '' }: SpendingByCate
     },
     scales: {
       ...chartTheme.defaultOptions.scales,
+      ...chartTheme.barOverrides.scales,
       x: {
         ...chartTheme.defaultOptions.scales!.x,
-        beginAtZero: true,
+        ...chartTheme.barOverrides.scales!.x,
         ticks: {
           ...chartTheme.defaultOptions.scales!.x!.ticks,
           callback: (value: number | string) => formatCurrency(Number(value)),
@@ -106,6 +104,8 @@ export function SpendingByCategoryChart({ data, className = '' }: SpendingByCate
     },
   };
 
+  const chartHeight = Math.max(bar.minHeight, data.length * bar.heightPerItem + bar.heightPadding);
+
   return (
     <div
       className={`rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-700 dark:bg-zinc-800 ${className} `}
@@ -115,7 +115,7 @@ export function SpendingByCategoryChart({ data, className = '' }: SpendingByCate
       <h3 className="mb-4 text-lg font-semibold text-zinc-900 dark:text-zinc-100">
         Spending by Category
       </h3>
-      <div style={{ height: Math.max(200, data.length * 50 + 50) }}>
+      <div style={{ height: chartHeight }}>
         <Bar data={chartData} options={options} />
       </div>
     </div>

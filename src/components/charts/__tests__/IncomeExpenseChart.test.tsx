@@ -6,9 +6,7 @@ describe('IncomeExpenseChart', () => {
     render(<IncomeExpenseChart income={0} expense={0} />);
 
     expect(screen.getByText('No income or expense data yet')).toBeInTheDocument();
-    expect(
-      screen.getByRole('img', { name: 'No income or expense data available' })
-    ).toBeInTheDocument();
+    expect(screen.getByRole('img', { name: 'No income or expense data yet' })).toBeInTheDocument();
   });
 
   it('renders chart container with title when data exists', () => {

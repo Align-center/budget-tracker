@@ -22,29 +22,33 @@ exports[`SpendingByCategoryChart > matches snapshot with data 1`] = `
 exports[`SpendingByCategoryChart > matches snapshot with empty data 1`] = `
 <div>
   <div
-    aria-label="No spending data available"
-    class="flex flex-col items-center justify-center rounded-xl border border-zinc-200 bg-white px-4 py-12 dark:border-zinc-700 dark:bg-zinc-800  "
+    aria-label="No spending data yet"
+    class="flex flex-col items-center justify-center rounded-xl border border-zinc-200 bg-white px-4 py-12 dark:border-zinc-700 dark:bg-zinc-800"
     role="img"
   >
-    <svg
+    <div
       aria-hidden="true"
       class="mb-4 h-12 w-12 text-zinc-300 dark:text-zinc-600"
-      fill="none"
-      stroke="currentColor"
-      viewBox="0 0 24 24"
     >
-      <path
-        d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        stroke-width="1.5"
-      />
-    </svg>
-    <p
-      class="text-center text-zinc-500 dark:text-zinc-400"
+      <svg
+        aria-hidden="true"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="1.5"
+        />
+      </svg>
+    </div>
+    <h3
+      class="mb-2 text-center text-lg font-medium text-zinc-900 dark:text-zinc-100"
     >
       No spending data yet
-    </p>
+    </h3>
   </div>
 </div>
 `;

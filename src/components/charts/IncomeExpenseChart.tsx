@@ -1,8 +1,10 @@
 'use client';
 
-import '@/components/charts/chartRegistration';
+import '@/components/charts/init';
 import dynamic from 'next/dynamic';
-import { chartTheme, formatCurrency, formatPercentage } from './chartTheme';
+import { chartTheme } from './chartTheme';
+import { EmptyState } from '@/components/ui/EmptyState';
+import { formatCurrency, formatPercentage } from '@/lib/utils';
 import type { TooltipItem } from 'chart.js';
 
 // SSR-safe dynamic import for Chart.js components
@@ -33,31 +35,24 @@ export function IncomeExpenseChart({ income, expense, className = '' }: IncomeEx
 
   if (!hasData) {
     return (
-      <div
-        className={`flex flex-col items-center justify-center rounded-xl border border-zinc-200 bg-white px-4 py-12 dark:border-zinc-700 dark:bg-zinc-800 ${className} `}
-        role="img"
-        aria-label="No income or expense data available"
-      >
-        <svg
-          className="mb-4 h-12 w-12 text-zinc-300 dark:text-zinc-600"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-          aria-hidden="true"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={1.5}
-            d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-          />
-        </svg>
-        <p className="text-center text-zinc-500 dark:text-zinc-400">
-          No income or expense data yet
-        </p>
-      </div>
+      <EmptyState
+        className={className}
+        icon={
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={1.5}
+              d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+        }
+        title="No income or expense data yet"
+      />
     );
   }
+
+  const { doughnut, centerText } = chartTheme.constants;
 
   const chartData = {
     labels: ['Income', 'Expense'],
@@ -67,28 +62,18 @@ export function IncomeExpenseChart({ income, expense, className = '' }: IncomeEx
         backgroundColor: [chartTheme.incomeColor, chartTheme.expenseColor],
         borderColor: ['transparent', 'transparent'],
         borderWidth: 0,
-        cutout: '60%',
-        spacing: 2,
+        cutout: doughnut.cutout,
+        spacing: doughnut.spacing,
       },
     ],
   };
 
   const options = {
     ...chartTheme.defaultOptions,
-    cutout: '60%',
+    ...chartTheme.doughnutOverrides,
     plugins: {
       ...chartTheme.defaultOptions.plugins,
-      legend: {
-        display: true,
-        position: 'bottom' as const,
-        labels: {
-          color: '#71717a',
-          font: { size: 12 },
-          padding: 20,
-          usePointStyle: true,
-          pointStyle: 'circle',
-        },
-      },
+      ...chartTheme.doughnutOverrides.plugins,
       tooltip: {
         ...chartTheme.defaultOptions.plugins!.tooltip,
         callbacks: {
@@ -119,13 +104,13 @@ export function IncomeExpenseChart({ income, expense, className = '' }: IncomeEx
       ctx.textBaseline = 'middle';
 
       // Balance label
-      ctx.font = '600 12px system-ui, -apple-system, sans-serif';
-      ctx.fillStyle = '#71717a';
+      ctx.font = centerText.labelFont;
+      ctx.fillStyle = centerText.labelColor;
       ctx.fillText('Balance', centerX, centerY - 10);
 
       // Balance amount
       const isPositive = balance >= 0;
-      ctx.font = '700 20px system-ui, -apple-system, sans-serif';
+      ctx.font = centerText.valueFont;
       ctx.fillStyle = isPositive ? chartTheme.incomeColor : chartTheme.expenseColor;
       ctx.fillText(formatCurrency(balance), centerX, centerY + 14);
 
@@ -142,7 +127,7 @@ export function IncomeExpenseChart({ income, expense, className = '' }: IncomeEx
       <h3 className="mb-4 text-lg font-semibold text-zinc-900 dark:text-zinc-100">
         Income vs Expense
       </h3>
-      <div style={{ height: 280, position: 'relative' }}>
+      <div style={{ height: doughnut.height, position: 'relative' }}>
         <Doughnut data={chartData} options={options} plugins={[centerTextPlugin]} />
       </div>
     </div>

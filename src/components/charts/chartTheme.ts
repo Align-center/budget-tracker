@@ -5,20 +5,6 @@ import type { ChartOptions } from 'chart.js';
  * SSR-safe: only contains plain objects, no browser-specific code.
  */
 export const chartTheme = {
-  // Color palette for categorical data (category colors are used for bars)
-  categoricalColors: [
-    '#3b82f6', // blue
-    '#22c55e', // green
-    '#f59e0b', // amber
-    '#ef4444', // red
-    '#8b5cf6', // violet
-    '#ec4899', // pink
-    '#06b6d4', // cyan
-    '#84cc16', // lime
-    '#f97316', // orange
-    '#6366f1', // indigo
-  ],
-
   // Semantic colors
   incomeColor: '#22c55e', // green-500
   expenseColor: '#ef4444', // red-500
@@ -73,25 +59,67 @@ export const chartTheme = {
         },
       },
     },
+  } satisfies ChartOptions,
+
+  // Chart-specific overrides
+  barOverrides: {
+    indexAxis: 'y' as const,
+    scales: {
+      x: {
+        beginAtZero: true,
+      },
+    },
   } satisfies ChartOptions<'bar'>,
+
+  doughnutOverrides: {
+    cutout: '60%',
+    plugins: {
+      legend: {
+        display: true,
+        position: 'bottom' as const,
+        labels: {
+          color: '#71717a',
+          font: { size: 12 },
+          padding: 20,
+          usePointStyle: true,
+          pointStyle: 'circle',
+        },
+      },
+    },
+  } satisfies ChartOptions<'doughnut'>,
+
+  // Constants extracted from magic numbers
+  constants: {
+    bar: {
+      borderOpacity: 0.8,
+      maxBarThickness: 40,
+      minHeight: 200,
+      heightPerItem: 50,
+      heightPadding: 50,
+      borderRadius: 6,
+    },
+    doughnut: {
+      cutout: '60%',
+      spacing: 2,
+      height: 280,
+    },
+    centerText: {
+      labelFont: '600 12px system-ui, -apple-system, sans-serif',
+      valueFont: '700 20px system-ui, -apple-system, sans-serif',
+      labelColor: '#71717a',
+    },
+  },
 };
 
 /**
- * Format currency for tooltips and labels
+ * Helper to apply opacity to a hex color
+ * Returns hex color with alpha (e.g., #RRGGBB + 0.8 = #RRGGBBCC)
  */
-export function formatCurrency(amount: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(amount);
-}
-
-/**
- * Format percentage for tooltips
- */
-export function formatPercentage(value: number, total: number): string {
-  if (total === 0) return '0%';
-  return `${((value / total) * 100).toFixed(1)}%`;
+export function withOpacity(hexColor: string, opacity: number): string {
+  const cleanHex = hexColor.replace('#', '');
+  const alphaHex = Math.round(opacity * 255)
+    .toString(16)
+    .padStart(2, '0')
+    .toUpperCase();
+  return `#${cleanHex}${alphaHex}`;
 }

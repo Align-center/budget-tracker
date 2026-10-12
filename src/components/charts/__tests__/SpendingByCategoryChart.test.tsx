@@ -31,7 +31,7 @@ describe('SpendingByCategoryChart', () => {
     render(<SpendingByCategoryChart data={[]} />);
 
     expect(screen.getByText('No spending data yet')).toBeInTheDocument();
-    expect(screen.getByRole('img', { name: 'No spending data available' })).toBeInTheDocument();
+    expect(screen.getByRole('img', { name: 'No spending data yet' })).toBeInTheDocument();
   });
 
   it('renders chart container with title when data exists', () => {
