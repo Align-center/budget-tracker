@@ -1,5 +1,6 @@
 'use client';
 
+import '@/components/charts/chartRegistration';
 import dynamic from 'next/dynamic';
 import type { SpendingByCategoryItem } from '@/hooks/useReports';
 import { chartTheme, formatCurrency } from './chartTheme';

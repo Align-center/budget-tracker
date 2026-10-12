@@ -1,5 +1,6 @@
 'use client';
 
+import '@/components/charts/chartRegistration';
 import dynamic from 'next/dynamic';
 import { chartTheme, formatCurrency, formatPercentage } from './chartTheme';
 import type { TooltipItem } from 'chart.js';
