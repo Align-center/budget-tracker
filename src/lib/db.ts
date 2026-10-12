@@ -59,6 +59,11 @@ export const categoryDb = {
   },
 
   async delete(id: string): Promise<boolean> {
+    // Check if category has associated transactions
+    const transactionCount = await db.transactions.where('categoryId').equals(id).count();
+    if (transactionCount > 0) {
+      throw new Error('Cannot delete category with existing transactions');
+    }
     const deleted = await db.categories.delete(id);
     return (deleted ?? 0) > 0;
   },
