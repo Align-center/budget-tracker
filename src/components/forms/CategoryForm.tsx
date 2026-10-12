@@ -47,6 +47,7 @@ export function CategoryForm({
 
   const handleIconSelect = (iconName: string) => {
     setValue('icon', iconName, { shouldValidate: true });
+    document.getElementById('icon-picker')?.classList.toggle('hidden');
   };
 
   const handleColorChange = (newColor: string) => {
