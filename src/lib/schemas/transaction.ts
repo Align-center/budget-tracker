@@ -61,3 +61,15 @@ export const formatTransactionAmount = (amount: number): string => {
   const sign = amount > 0 ? '+' : '';
   return `${sign}${amount.toFixed(2)}`;
 };
+
+/**
+ * Helper to format amount as currency (always positive, with $ sign)
+ */
+export const formatCurrency = (amount: number): string => {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(Math.abs(amount));
+};
