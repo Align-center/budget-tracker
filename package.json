@@ -2,6 +2,7 @@
   "name": "budget-tracker",
   "version": "0.1.0",
   "private": true,
+  "description": "A personal expense tracker built with Next.js 16 + React 19, demonstrating LLM-assisted development via structured issue tracking, agent skills, and iterative branch-per-feature workflow.",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
