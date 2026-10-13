@@ -16,7 +16,3 @@ export type { TransactionInput, TransactionFormData } from './transaction';
 // Category schemas and types
 export { categoryInputSchema, categorySchema } from './category';
 export type { CategoryInput, CategoryFormData } from './category';
-
-// Budget schemas and types
-export { budgetPeriodSchema, budgetInputSchema, budgetSchema } from './budget';
-export type { BudgetInput, BudgetFormData } from './budget';
