@@ -33,87 +33,98 @@ This project demonstrates how to use LLMs (specifically Claude Code) as a collab
 
 ## 📋 Issue Tracking Workflow
 
-All work is tracked as **local markdown files** in `.scratch/budget-tracker/issues/`:
+> ⚠️ **Important**: This project has **two** issue directories in `.scratch/`:
+>
+> | Directory                             | Status       | Description                                                                                                                 |
+> | ------------------------------------- | ------------ | --------------------------------------------------------------------------------------------------------------------------- |
+> | `.scratch/budget-tracker/`            | **ARCHIVED** | Original 28-issue horizontal-layer plan (over-engineered: repository pattern, Context+Reducer, budgets, 4 charts, 3 tables) |
+> | `.scratch/budget-tracker-simplified/` | **ACTIVE**   | Current 6-issue vertical-slice plan (tracer bullets: Categories → Transactions → Reports → Nav → E2E → Cleanup)             |
+>
+> The active work is in **`.scratch/budget-tracker-simplified/`**. The archived version is kept for reference.
+
+### Active Issue Structure (`.scratch/budget-tracker-simplified/`)
 
 ```
-.scratch/budget-tracker/
-├── spec.md           # High-level specification
-├── architecture.md   # Tech stack, patterns, data models
-├── acceptance.md     # Feature & technical acceptance criteria
-├── map.md            # Branch → issue mapping (the "effort map")
+.scratch/budget-tracker-simplified/
+├── spec.md           # Simplified architecture spec (source of truth)
+├── map.md            # Effort map with vertical slices + dependency chain
 └── issues/
-    ├── 01-project-setup.md
-    ├── 02-types-and-schemas.md
-    ├── 03-indexeddb-setup.md
-    ├── 04-repository-interfaces.md
-    ├── 05-indexeddb-repositories.md
-    ├── 06-context-providers.md
-    ├── 07-reducers.md
-    ├── 08-initialize-app-state.md
-    ├── 09-ui-primitives.md
-    ├── 10-layout-components.md
-    ├── 11-category-list.md
-    ├── 12-category-form.md
-    ├── 13-category-page.md
-    ├── 14-transaction-list.md
-    ├── 15-transaction-form.md
-    ├── 16-transaction-page.md
-    ├── 17-budget-list.md
-    ├── 18-budget-form.md
-    ├── 19-budget-page.md
-    ├── 20-report-utils.md
-    ├── 21-report-charts.md
-    ├── 22-report-tables.md
-    ├── 23-reports-page.md
-    ├── 24-dashboard-page.md
-    ├── 25-navigation-and-routing.md
-    ├── 26-theme-and-styling.md
-    ├── 27-error-boundaries-and-loading.md
-    └── 28-data-export.md
+    ├── 01-categories-crud.md      # Categories CRUD (name, icon, color)
+    ├── 02-transactions-crud.md    # Transactions CRUD (amount, category, date, note)
+    ├── 03-reports-dashboard.md    # Reports & Dashboard (2 charts)
+    ├── 04-navigation-layout.md    # Navigation & Layout (top tabs)
+    ├── 05-e2e-tests.md            # E2E Tests (5 critical flows)
+    └── 06-cleanup.md              # Cleanup (remove old architecture)
 ```
 
-### Issue File Structure
+### Issue File Structure (Simplified)
 
-Each issue follows a consistent format:
+Each issue is a **vertical slice** (tracer bullet) cutting through schema → DB → hook → UI → tests:
 
 ```markdown
-# Issue NN: Title
+# NN: Title
 
-## Type: task | research | prototype
+**What to build:** One-sentence user-facing feature description
 
-## Status: open | claimed | resolved
+**Blocked by:** Issue numbers this depends on (or "None")
 
-## Description
-
-Brief description of the work.
-
-## Tasks
-
-- [ ] Specific, verifiable task
-- [ ] Another task
+**Status:** ready-for-agent | claimed | resolved
 
 ## Acceptance Criteria
 
-- [ ] Measurable outcome
-- [ ] Another outcome
+- [ ] Schema, DB, Hook, Form, List, Page — each with specific deliverables
+- [ ] Unit tests: schema, DB (fake-indexeddb), hook (renderHook)
+- [ ] Component tests: Form (validation, submit, prefill), List (empty, render, actions)
+- [ ] TypeScript strict passes, lint passes
 ```
 
-### The Effort Map (`map.md`)
+### The Effort Map (`.scratch/budget-tracker-simplified/map.md`)
 
-Maps logical workstreams to issue ranges:
+Vertical slices with explicit dependency chain:
 
 ```markdown
-## Branches
+## Dependency Chain
 
-- foundation → issues/01 → issues/05
-- state → issues/06 → issues/08
-- ui-core → issues/09 → issues/10
-- categories → issues/11 → issues/13
-- transactions → issues/14 → issues/16
-- budgets → issues/17 → issues/19
-- reports → issues/20 → issues/23
-- polish → issues/24 → issues/28
+01 (Categories CRUD)
+↓
+02 (Transactions CRUD — needs category select)
+↓
+03 (Reports & Dashboard — needs transaction data)
+↓
+04 (Navigation & Layout — needs all 3 pages)
+↓
+05 (E2E Tests — needs full navigable app)
+↓
+06 (Cleanup — needs E2E verification)
+
+## Key Principles
+
+- Each slice includes its own tests (unit + component co-located)
+- E2E is separate (cross-cutting, runs on merge)
+- Cleanup last (removes old architecture after new is verified)
+- No horizontal slices (no "schemas only", "DB only", "hooks only" tickets)
 ```
+
+### Archived Issues (`.scratch/budget-tracker/issues/`)
+
+The original 28 issues (kept for history):
+
+```
+01-project-setup          09-ui-primitives       17-budget-list
+02-types-and-schemas      10-layout-components   18-budget-form
+03-indexeddb-setup        11-category-list       19-budget-page
+04-repository-interfaces  12-category-form       20-report-utils
+05-indexeddb-repositories 13-category-page       21-report-charts
+06-context-providers      14-transaction-list    22-report-tables
+07-reducers               15-transaction-form    23-reports-page
+08-initialize-app-state   16-transaction-page    24-dashboard-page
+                                                    25-navigation-and-routing
+                                                    26-theme-and-styling
+                                                    27-error-boundaries-and-loading
+                                                    28-data-export
+```
+
+> These were organized as **horizontal layers** (foundation → state → ui-core → categories → transactions → budgets → reports → polish) — which led to over-engineering. The simplified approach uses **vertical slices** instead.
 
 ---
 
@@ -147,7 +158,7 @@ The project uses **Claude Code agent skills** (defined in `AGENTS.md` and `.clau
 
 - Define the problem, scope, and acceptance criteria in `.scratch/`
 - Create the effort map showing workstream dependencies
-- Break work into 28 atomic, ordered issues
+- Break work into 6 vertical slices (simplified) or 28 atomic issues (original)
 
 ### 2. **Issue Claiming** (Human → LLM)
 
